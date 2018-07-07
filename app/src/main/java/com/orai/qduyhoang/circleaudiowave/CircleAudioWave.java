@@ -84,10 +84,10 @@ public class CircleAudioWave extends View {
                 float lengthCurXFromCenter = curX <= radius ? curX : width - curX;  // length of the current position with respect to the origin
 
                 float maxHeight = 2 * (lengthCurXFromCenter * middle) / (radius);   // Thales's theorem: max height from current position on x-axis
-                // to the point above it on the circle
+                                                                                    // to the point above it on the circle
                 scaledHeight = scaledHeight > maxHeight? maxHeight: scaledHeight;
 
-                // draw a line representing this item in the amplitudes ArrayList
+                // draw a line representing this item in the amplitudes ArrayLi
                 canvas.drawLine(curX, middle + scaledHeight / 2, curX, middle
                         - scaledHeight / 2, linePaint);
 
