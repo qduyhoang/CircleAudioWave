@@ -19,17 +19,18 @@ import android.view.View.OnClickListener;
 import android.widget.TextView;
 
 public class MainActivity extends Activity {
-    public static final String DIRECTORY_NAME_TEMP = "AudioTemp";
     public static final int REPEAT_INTERVAL = 50;
     public static final int MY_PERMISSIONS_REQUEST_RECORD_AUDIO = 1;
-    public static Context context;
-    private TextView txtRecord;
+    public static final int MY_PERMISSIONS_REQUEST_EXTERNAL_STORAGE = 2;
+    public static final String OUTPUT_DIRECTORY = "/Recordings";
+    public String outputDirPath;
+    private TextView recordStatus;
 
     CircleAudioWave circleAudioWave;
 
     private MediaRecorder recorder = null;
 
-    File audioDirTemp;
+    File outputDir;
     private boolean isRecording = false;
 
 
@@ -44,17 +45,17 @@ public class MainActivity extends Activity {
         circleAudioWave = findViewById(R.id.record_button);
         circleAudioWave.setOnClickListener(recordClick);
 
-        txtRecord = findViewById(R.id.txtRecord);
+        recordStatus = findViewById(R.id.record_status);
 
-        audioDirTemp = new File(Environment.getExternalStorageDirectory(),
-                DIRECTORY_NAME_TEMP);
-        if (audioDirTemp.exists()) {
-            deleteFilesInDir(audioDirTemp);
+        outputDir = new File(Environment.getExternalStorageDirectory(),
+                OUTPUT_DIRECTORY);
+        outputDirPath = Environment.getExternalStorageDirectory().getAbsolutePath() + OUTPUT_DIRECTORY;
+        if (outputDir.exists()) {
+            deleteFilesInDir(outputDir);
         } else {
-            audioDirTemp.mkdirs();
+            outputDir.mkdirs();
         }
 
-        context = this;
         // create the Handler for record button update
         handler = new Handler();
 
@@ -63,25 +64,23 @@ public class MainActivity extends Activity {
                 Manifest.permission.RECORD_AUDIO)
                 != PackageManager.PERMISSION_GRANTED) {
 
-            // Permission is not granted
-            // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    Manifest.permission.RECORD_AUDIO)) {
-                // Show an explanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
-            } else {
-                // No explanation needed; request the permission
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.RECORD_AUDIO},
-                        MY_PERMISSIONS_REQUEST_RECORD_AUDIO);
+            // Permission not granted, request the permission
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.RECORD_AUDIO},
+                    MY_PERMISSIONS_REQUEST_RECORD_AUDIO);
+            // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+            // app-defined int constant. The callback method gets the
+            // result of the request.
+        }
 
-                // MY_PERMISSIONS_REQUEST_RECORD_AUDIO is an
-                // app-defined int constant. The callback method gets the
-                // result of the request.
-            }
-        } else {
-            // Permission has already been granted
+        // Request permission to write files to external storage
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    MY_PERMISSIONS_REQUEST_EXTERNAL_STORAGE);
         }
     }
 
@@ -91,22 +90,18 @@ public class MainActivity extends Activity {
         public void onClick(View v) {
 
             if (!isRecording) {
-                // isRecording = true;
+                 isRecording = true;
 
-                txtRecord.setText("Stop Recording");
+                recordStatus.setText("Stop Recording");
 
                 recorder = new MediaRecorder();
 
                 recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
                 recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
                 recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-                recorder.setOutputFile(audioDirTemp + "/audio_file"
+                recorder.setOutputFile(outputDirPath + "/audio_file"
                         + ".mp3");
 
-                OnErrorListener errorListener = null;
-                recorder.setOnErrorListener(errorListener);
-                OnInfoListener infoListener = null;
-                recorder.setOnInfoListener(infoListener);
 
                 try {
                     recorder.prepare();
@@ -120,9 +115,7 @@ public class MainActivity extends Activity {
                 handler.post(updateVisualizer);
 
             } else {
-
-                txtRecord.setText("Start Recording");
-
+                recordStatus.setText("Start Recording");
                 releaseRecorder();
             }
 
