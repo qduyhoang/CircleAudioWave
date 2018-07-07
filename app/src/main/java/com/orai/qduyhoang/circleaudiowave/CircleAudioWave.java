@@ -1,11 +1,14 @@
 package com.orai.qduyhoang.circleaudiowave;
 
 
+package com.orai.qduyhoang.sample;
+
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 import java.util.LinkedList;
@@ -70,7 +73,7 @@ public class CircleAudioWave extends View {
         // for each item in the amplitudes ArrayList
         if (amplitudes.size() >= 13){
             int amplitudes_size = amplitudes.size();
-            //  linePaint.setColor(COLOR_LIST[random.nextInt(6)]); // set color to black
+//            linePaint.setColor(COLOR_LIST[random.nextInt(6)]); // set color to black
             for(int i=0; i < amplitudes_size; i++){
                 if (i >= 5){    //Store the most recent 5 data points to smooth out lines
                     power = amplitudes.get(i-5);
@@ -84,13 +87,12 @@ public class CircleAudioWave extends View {
                 // to the point above it on the circle
                 scaledHeight = scaledHeight > maxHeight? maxHeight: scaledHeight;
 
-                curX += width / amplitudes_size;
-
                 // draw a line representing this item in the amplitudes ArrayList
                 canvas.drawLine(curX, middle + scaledHeight / 2, curX, middle
                         - scaledHeight / 2, linePaint);
+
+                curX += width / amplitudes_size;
             }
         }
     }
-
 }
