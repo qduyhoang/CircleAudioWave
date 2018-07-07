@@ -2,14 +2,18 @@ package com.orai.qduyhoang.sample;
 import java.io.File;
 import java.io.IOException;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.media.MediaRecorder;
 import android.media.MediaRecorder.OnErrorListener;
 import android.media.MediaRecorder.OnInfoListener;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
@@ -17,6 +21,7 @@ import android.widget.TextView;
 public class MainActivity extends Activity {
     public static final String DIRECTORY_NAME_TEMP = "AudioTemp";
     public static final int REPEAT_INTERVAL = 50;
+    public static final int MY_PERMISSIONS_REQUEST_RECORD_AUDIO = 1;
     public static Context context;
     private TextView txtRecord;
 
@@ -50,8 +55,34 @@ public class MainActivity extends Activity {
         }
 
         context = this;
-        // create the Handler for visualizer update
+        // create the Handler for record button update
         handler = new Handler();
+
+        // Request permission to record audio
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.RECORD_AUDIO)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            // Permission is not granted
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.RECORD_AUDIO)) {
+                // Show an explanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+            } else {
+                // No explanation needed; request the permission
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.RECORD_AUDIO},
+                        MY_PERMISSIONS_REQUEST_RECORD_AUDIO);
+
+                // MY_PERMISSIONS_REQUEST_RECORD_AUDIO is an
+                // app-defined int constant. The callback method gets the
+                // result of the request.
+            }
+        } else {
+            // Permission has already been granted
+        }
     }
 
     OnClickListener recordClick = new OnClickListener() {
