@@ -1,5 +1,6 @@
 package com.orai.qduyhoang.circleaudiowave;
 
+
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -7,14 +8,13 @@ import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.View;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedList;
 import java.util.Random;
 
 public class CircleAudioWave extends View {
-    private static final int LINE_WIDTH = 2; // width of visualizer lines
-    private static final int LINE_SCALE = 60; // scales visualizer lines
-    private List<Float> amplitudes; // amplitudes for line lengths
+    private static final int LINE_WIDTH = 2; // width of drawn lines
+    private static final int LINE_SCALE = 60; // scales line lengths
+    private LinkedList<Float> amplitudes; // amplitudes for line lengths
     private int width; // width of this View
     private int height; // height of this View
     private Paint linePaint; // specifies line drawing characteristics
@@ -32,11 +32,16 @@ public class CircleAudioWave extends View {
     }
 
     // called when the dimensions of the View change
+    // this is called once when the activity starts
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         width = w; // new width of this View
         height = h; // new height of this View
-        amplitudes = new ArrayList<Float>(width / LINE_WIDTH);
+
+        //We only need insert and delete operations
+        //-> use a linked list to store amplitudes
+        //Complexity (worst case): Insertion O(1)--Deletion O(1)
+        amplitudes = new LinkedList<>();
     }
 
     // clear all amplitudes to prepare for a new visualization
@@ -47,8 +52,8 @@ public class CircleAudioWave extends View {
     // add the given amplitude to the amplitudes ArrayList
     public void addAmplitude(float amplitude) {
         // add newest and buffered data to the amplitudes ArrayList
-        amplitudes.add((float) (amplitude*0.7));
         amplitudes.add((float) (amplitude*0.8));
+        amplitudes.add((float) (amplitude*0.9));
         amplitudes.add(amplitude);
         amplitudes.add((float) (amplitude*0.9));
         amplitudes.add((float) (amplitude*0.8));
@@ -59,30 +64,32 @@ public class CircleAudioWave extends View {
     public void onDraw(Canvas canvas) {
         int middle = height / 2; // get the middle of the View
         int radius = width / 2;
-        float curX = 0; // start curX at zero
+        float curX = 0;
+        float power;
 
         // for each item in the amplitudes ArrayList
-        if (amplitudes.size() > 10){
-          //  linePaint.setColor(COLOR_LIST[random.nextInt(6)]); // set color to black
-            for(int i=0; i<amplitudes.size(); i++){
-                float power = amplitudes.get(i);
+        if (amplitudes.size() >= 13){
+            int amplitudes_size = amplitudes.size();
+            //  linePaint.setColor(COLOR_LIST[random.nextInt(6)]); // set color to black
+            for(int i=0; i < amplitudes_size; i++){
+                if (i >= 5){    //Store the most recent 5 data points to smooth out lines
+                    power = amplitudes.get(i-5);
+                } else {
+                    power = amplitudes.removeFirst();
+                }
                 float scaledHeight = (power / LINE_SCALE); // scale the power
-                float lengthCurXFromCenter = curX <= radius ? curX : width - curX;
-                float maxHeight = 2 * (lengthCurXFromCenter * middle) / (radius);
+                float lengthCurXFromCenter = curX <= radius ? curX : width - curX;  // length of the current position with respect to the origin
 
+                float maxHeight = 2 * (lengthCurXFromCenter * middle) / (radius);   // Thales's theorem: max height from current position on x-axis
+                // to the point above it on the circle
                 scaledHeight = scaledHeight > maxHeight? maxHeight: scaledHeight;
 
-                curX += this.width / amplitudes.size();
+                curX += width / amplitudes_size;
 
                 // draw a line representing this item in the amplitudes ArrayList
                 canvas.drawLine(curX, middle + scaledHeight / 2, curX, middle
                         - scaledHeight / 2, linePaint);
             }
-            amplitudes.remove(0);
-            amplitudes.remove(1);
-            amplitudes.remove(2);
-            amplitudes.remove(3);
-            amplitudes.remove(4);
         }
     }
 
