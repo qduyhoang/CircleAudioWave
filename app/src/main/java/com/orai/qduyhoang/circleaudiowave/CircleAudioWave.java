@@ -47,8 +47,8 @@ public class CircleAudioWave extends View {
     // add the given amplitude to the amplitudes ArrayList
     public void addAmplitude(float amplitude) {
         // add newest and buffered data to the amplitudes ArrayList
+        amplitudes.add((float) (amplitude*0.7));
         amplitudes.add((float) (amplitude*0.8));
-        amplitudes.add((float) (amplitude*0.9));
         amplitudes.add(amplitude);
         amplitudes.add((float) (amplitude*0.9));
         amplitudes.add((float) (amplitude*0.8));
