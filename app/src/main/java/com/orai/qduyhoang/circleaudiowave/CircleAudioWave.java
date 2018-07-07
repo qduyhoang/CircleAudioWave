@@ -1,8 +1,6 @@
 package com.orai.qduyhoang.circleaudiowave;
 
 
-package com.orai.qduyhoang.sample;
-
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -15,12 +13,16 @@ import java.util.LinkedList;
 import java.util.Random;
 
 public class CircleAudioWave extends View {
+    public static final int LEFT_TO_RIGHT = 0;
+    public static final int RIGHT_TO_LEFT = 1;
+
     private static final int LINE_WIDTH = 2; // width of drawn lines
     private static final int LINE_SCALE = 60; // scales line lengths
     private LinkedList<Float> amplitudes; // amplitudes for line lengths
     private int width; // width of this View
     private int height; // height of this View
     private Paint linePaint; // specifies line drawing characteristics
+    private int audioWaveDirection;   //Direction of the audio wave (left-right or right-left)
     private int[]COLOR_LIST = {Color.RED, Color.YELLOW, Color.CYAN, Color.GREEN, Color.MAGENTA, Color.DKGRAY, Color.BLUE, Color.BLACK };
     private Random random;
 
@@ -32,6 +34,8 @@ public class CircleAudioWave extends View {
         linePaint.setStrokeWidth(LINE_WIDTH); // set stroke width
         linePaint.setFakeBoldText(true);
         random = new Random();
+
+        audioWaveDirection = LEFT_TO_RIGHT; // set default audio wave direction
     }
 
     // called when the dimensions of the View change
@@ -67,7 +71,13 @@ public class CircleAudioWave extends View {
     public void onDraw(Canvas canvas) {
         int middle = height / 2; // get the middle of the View
         int radius = width / 2;
-        float curX = 0;
+        float curX;
+        if (audioWaveDirection == LEFT_TO_RIGHT){
+            curX = width;
+        } else {
+            curX = 0;
+        }
+
         float power;
 
         // for each item in the amplitudes ArrayList
@@ -84,15 +94,29 @@ public class CircleAudioWave extends View {
                 float lengthCurXFromCenter = curX <= radius ? curX : width - curX;  // length of the current position with respect to the origin
 
                 float maxHeight = 2 * (lengthCurXFromCenter * middle) / (radius);   // Thales's theorem: max height from current position on x-axis
-                                                                                    // to the point above it on the circle
+                // to the point above it on the circle
                 scaledHeight = scaledHeight > maxHeight? maxHeight: scaledHeight;
 
-                // draw a line representing this item in the amplitudes ArrayLi
+                // draw a line representing this item in the amplitudes
                 canvas.drawLine(curX, middle + scaledHeight / 2, curX, middle
                         - scaledHeight / 2, linePaint);
 
-                curX += width / amplitudes_size;
+                if (audioWaveDirection == LEFT_TO_RIGHT) {
+                    curX -= width / amplitudes_size;
+                    Log.e("DIRECTION", "onDraw: YESSS" + curX);
+                } else {
+                    curX += width / amplitudes_size;
+                }
             }
         }
     }
+
+    public void setAudioWaveDirection(int direction){
+        if (direction == LEFT_TO_RIGHT){
+            this.audioWaveDirection = LEFT_TO_RIGHT;
+        } else {
+            this.audioWaveDirection = RIGHT_TO_LEFT;
+        }
+    }
+
 }
