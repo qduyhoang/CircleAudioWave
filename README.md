@@ -1,6 +1,7 @@
 # Circle Audio Wave - Audio Wave Visualizer for Android
 
 ## Getting started
+
 ### Add data
 ```java
 addAmplitude(float amplitude)
@@ -12,6 +13,7 @@ For every datapoint, it generates 4 other "fake" datapoints. The degree of simil
 setAudioWaveDirection(int direction)
 ```
 There are two possible inputs: LEFT_TO_RIGHT( = 0) or RIGHT_TO_LEFT ( = 1)
+
 Default value: LEFT_TO_RIGHT
 
 ### Set audio wave paddings
@@ -19,6 +21,7 @@ Default value: LEFT_TO_RIGHT
 setAudioWavePadding(int width, int height)
 ```
 Audio waves are already constrained by the dimensions of view. This method offers a way to better fit background images and drawable of all shapes.
+
 Default value: width = 0, height = 0
 
 ### Set minimum height of audio wave (dp) to display on View
@@ -26,6 +29,7 @@ Default value: width = 0, height = 0
 setMinimumDisplayHeight(int minimum)
 ```
 Any audio wave with height smaller than the specified value will not be displayed. Good for noise cancelling.
+
 Default value: 10
 
 ### Change audio waves' chaos
@@ -33,6 +37,7 @@ Default value: 10
 setAudioWaveChaos(float chaos)
 ```
 Degree of chaos of the audio waves. Range [0 - 1] : Chaotic - Peaceful
+
 Default value: 0.4
 
 ### Scale audio wave lengths
@@ -40,6 +45,7 @@ Default value: 0.4
 setAudioWaveLengthScale(int scale)
 ```
 Scale the length of the audio wave. The larger the scale, the smaller the length.
+
 Default value: 60
 
 ### Change paint style
