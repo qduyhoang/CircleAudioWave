@@ -16,7 +16,7 @@ public class CircleAudioWave extends View {
     public static final int RIGHT_TO_LEFT = 1;
 
     private static final int LINE_WIDTH = 2; // width of drawn lines
-    private static final int LINE_SCALE = 60; // scales line lengths
+    private static final int LINE_SCALE = 60; // scales audio wave lengths
     private static final int MINIMUM_DISPLAY_HEIGHT = 10;
     private static final float AUDIO_WAVE_CHAOS = (float) 0.4;  //Range [0 - 1] : Chaotic - Peaceful
 
@@ -26,6 +26,7 @@ public class CircleAudioWave extends View {
     private int height; // height of this View
     private Paint linePaint; // specifies line drawing characteristics
 
+    private int audioWaveLengthScale;      // scales audio wave lengths
     private int minimumDisplayHeight;  //Minimum height of audio wave (dP) to display on View
     private int audioWaveDirection;   //Direction of the audio wave (left-right or right-left)
     private int audioWaveWidthPadding;   //Padding of the audio wave inside being drawn inside view
@@ -43,6 +44,7 @@ public class CircleAudioWave extends View {
         linePaint.setStrokeWidth(LINE_WIDTH); // set stroke width
         random = new Random();
 
+        audioWaveLengthScale = LINE_SCALE;
         minimumDisplayHeight = MINIMUM_DISPLAY_HEIGHT;
         audioWaveDirection = LEFT_TO_RIGHT;
         audioWaveWidthPadding = 0;
@@ -148,6 +150,10 @@ public class CircleAudioWave extends View {
 
     public void setAudioWaveChaos(float chaos){
         this.audioWaveChaos = chaos;
+    }
+
+    public void setAudioWaveLengthScale(int scale){
+        this.audioWaveLengthScale = scale;
     }
 
     public Paint getPaint(){

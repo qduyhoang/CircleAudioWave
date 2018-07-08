@@ -44,7 +44,7 @@ public class MainActivity extends Activity {
 
         circleAudioWave = findViewById(R.id.record_button);
         circleAudioWave.setOnClickListener(recordClick);
-        circleAudioWave.setAudioWavePadding(50, 30);
+        circleAudioWave.setAudioWavePadding(50, 40);
 
 
         recordStatus = findViewById(R.id.record_status);
