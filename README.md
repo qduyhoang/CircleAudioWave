@@ -174,6 +174,7 @@ OnClickListener recordClick = new OnClickListener() {
 
         }
     };
+```
 
 #### Now create a thread to collect the data every 50 milliseconds
 ```java
