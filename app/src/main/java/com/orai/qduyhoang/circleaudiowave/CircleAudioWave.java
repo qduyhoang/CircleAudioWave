@@ -1,6 +1,5 @@
 package com.orai.qduyhoang.circleaudiowave;
 
-t
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -127,6 +126,10 @@ public class CircleAudioWave extends View {
     public void setAudioWavePadding(int width, int height){
         this.audioWaveWidthPadding = width;
         this.audioWaveHeightPadding = height;
+    }
+
+    public Paint getPaint(){
+        return this.linePaint;
     }
 
 }

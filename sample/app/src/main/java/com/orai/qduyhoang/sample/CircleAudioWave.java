@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 import java.util.LinkedList;
@@ -16,13 +17,19 @@ public class CircleAudioWave extends View {
 
     private static final int LINE_WIDTH = 2; // width of drawn lines
     private static final int LINE_SCALE = 60; // scales line lengths
+    private static final int MINIMUM_DISPLAY_HEIGHT = 10;
+
+
     private LinkedList<Float> amplitudes; // amplitudes for line lengths
     private int width; // width of this View
     private int height; // height of this View
     private Paint linePaint; // specifies line drawing characteristics
+
+    private int minimumDisplayHeight;  //Minimum height of audio wave (dP) to display on View
     private int audioWaveDirection;   //Direction of the audio wave (left-right or right-left)
     private int audioWaveWidthPadding;   //Padding of the audio wave inside being drawn inside view
     private int audioWaveHeightPadding;   //Padding of the audio wave inside being drawn inside view
+
     private int[]COLOR_LIST = {Color.RED, Color.YELLOW, Color.CYAN, Color.GREEN, Color.MAGENTA, Color.DKGRAY, Color.BLUE, Color.BLACK };
     private Random random;
 
@@ -35,6 +42,7 @@ public class CircleAudioWave extends View {
         linePaint.setFakeBoldText(true);
         random = new Random();
 
+        minimumDisplayHeight = MINIMUM_DISPLAY_HEIGHT;
         audioWaveDirection = LEFT_TO_RIGHT;
         audioWaveWidthPadding = 0;
         audioWaveHeightPadding = 0;
@@ -50,7 +58,7 @@ public class CircleAudioWave extends View {
 
         //We only need insert and delete operations
         //-> use a linked list to store amplitudes
-        //Complexity (worst case): Insertion O(1)--Deletion O(1)
+        //Complexity: Insertion O(1)--Deletion O(1)
         amplitudes = new LinkedList<>();
     }
 
@@ -95,21 +103,26 @@ public class CircleAudioWave extends View {
                     power = amplitudes.removeFirst();
                 }
                 float scaledHeight = (power / LINE_SCALE); // scale the power
-                float lengthCurXFromCenter = curX <= radius ? curX : width - curX;  // length of the current position with respect to the origin
 
-                float maxHeight =(2 * lengthCurXFromCenter * middle) / (radius) - 2 * audioWaveHeightPadding;   // Thales's theorem: max height from current position on x-axis
-                                                                                    // to the point above it on the circle
-                scaledHeight = scaledHeight > maxHeight? maxHeight: scaledHeight;
+                //Don't display any value less than the minimum display height - to prevent noise
+                if (scaledHeight >= minimumDisplayHeight){
+                    float lengthCurXFromCenter = curX <= radius ? curX : width - curX;  // length of the current position with respect to the origin
 
-                // draw a line representing this item in the amplitudes
-                canvas.drawLine(curX, middle + scaledHeight / 2, curX, middle
-                        - scaledHeight / 2, linePaint);
+                    float maxHeight =(2 * lengthCurXFromCenter * middle) / (radius) - 2 * audioWaveHeightPadding;   // Thales's theorem: max height from current position on x-axis
+                    // to the point above it on the circle
+                    scaledHeight = scaledHeight > maxHeight? maxHeight: scaledHeight;
 
 
-                if (audioWaveDirection == LEFT_TO_RIGHT) {
-                    curX -= step;
-                } else {
-                    curX += step;
+                    // draw a line representing this item in the amplitudes
+                    canvas.drawLine(curX, middle + scaledHeight / 2, curX, middle
+                            - scaledHeight / 2, linePaint);
+
+
+                    if (audioWaveDirection == LEFT_TO_RIGHT) {
+                        curX -= step;
+                    } else {
+                        curX += step;
+                    }
                 }
             }
         }
@@ -128,4 +141,11 @@ public class CircleAudioWave extends View {
         this.audioWaveHeightPadding = height;
     }
 
+    //Set minimum height of audio wave (dP) to display on View
+    public void setMinimumDisplayHeight(int minimum){
+        this.minimumDisplayHeight = minimum;
+    }
+    public Paint getPaint(){
+        return this.linePaint;
+    }
 }
