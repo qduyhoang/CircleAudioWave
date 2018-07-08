@@ -46,6 +46,7 @@ public class MainActivity extends Activity {
         circleAudioWave.setOnClickListener(recordClick);
         circleAudioWave.setAudioWavePadding(50, 30);
 
+
         recordStatus = findViewById(R.id.record_status);
 
         outputDir = new File(Environment.getExternalStorageDirectory(),

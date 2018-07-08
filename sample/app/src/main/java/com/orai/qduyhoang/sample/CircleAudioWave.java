@@ -18,6 +18,7 @@ public class CircleAudioWave extends View {
     private static final int LINE_WIDTH = 2; // width of drawn lines
     private static final int LINE_SCALE = 60; // scales line lengths
     private static final int MINIMUM_DISPLAY_HEIGHT = 10;
+    private static final float AUDIO_WAVE_CHAOS = (float) 0.4;  //Range [0 - 1] : Chaotic - Peaceful
 
 
     private LinkedList<Float> amplitudes; // amplitudes for line lengths
@@ -29,23 +30,24 @@ public class CircleAudioWave extends View {
     private int audioWaveDirection;   //Direction of the audio wave (left-right or right-left)
     private int audioWaveWidthPadding;   //Padding of the audio wave inside being drawn inside view
     private int audioWaveHeightPadding;   //Padding of the audio wave inside being drawn inside view
+    private float audioWaveChaos;         //Degree of chaos of the audio waves. Range [0 - 1] : Chaotic - Peaceful
 
     private int[]COLOR_LIST = {Color.RED, Color.YELLOW, Color.CYAN, Color.GREEN, Color.MAGENTA, Color.DKGRAY, Color.BLUE, Color.BLACK };
     private Random random;
 
     // constructor
     public CircleAudioWave(Context context, AttributeSet attrs) {
-        super(context, attrs); // call superclass constructor
+        super(context, attrs);
         linePaint = new Paint(); // create Paint for lines
         linePaint.setColor(Color.BLACK); // set color to black
         linePaint.setStrokeWidth(LINE_WIDTH); // set stroke width
-        linePaint.setFakeBoldText(true);
         random = new Random();
 
         minimumDisplayHeight = MINIMUM_DISPLAY_HEIGHT;
         audioWaveDirection = LEFT_TO_RIGHT;
         audioWaveWidthPadding = 0;
         audioWaveHeightPadding = 0;
+        audioWaveChaos = AUDIO_WAVE_CHAOS;
     }
 
     // called when the dimensions of the View change
@@ -54,7 +56,6 @@ public class CircleAudioWave extends View {
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         width = w; // new width of this View
         height = h; // new height of this View
-
 
         //We only need insert and delete operations
         //-> use a linked list to store amplitudes
@@ -67,14 +68,13 @@ public class CircleAudioWave extends View {
         amplitudes.clear();
     }
 
-    // add the given amplitude to the amplitudes ArrayList
+    // add the given amplitude and buffered data to the amplitudes LinkedList
     public void addAmplitude(float amplitude) {
-        // add newest and buffered data to the amplitudes ArrayList
-        amplitudes.add((float) (amplitude*0.8));
-        amplitudes.add((float) (amplitude*0.9));
-        amplitudes.add(amplitude);
-        amplitudes.add((float) (amplitude*0.9));
-        amplitudes.add((float) (amplitude*0.8));
+        float scale;
+        for (int i = 0; i <= 4; i++){
+            scale = audioWaveChaos + random.nextFloat() * (1 - audioWaveChaos);
+            amplitudes.add(amplitude * scale);
+        }
     }
 
     // draw the visualizer with scaled lines representing the amplitudes
@@ -145,6 +145,11 @@ public class CircleAudioWave extends View {
     public void setMinimumDisplayHeight(int minimum){
         this.minimumDisplayHeight = minimum;
     }
+
+    public void setAudioWaveChaos(float chaos){
+        this.audioWaveChaos = chaos;
+    }
+
     public Paint getPaint(){
         return this.linePaint;
     }
