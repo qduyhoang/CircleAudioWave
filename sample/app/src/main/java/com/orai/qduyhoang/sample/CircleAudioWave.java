@@ -5,7 +5,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 
 import java.util.LinkedList;
@@ -22,6 +21,8 @@ public class CircleAudioWave extends View {
     private int height; // height of this View
     private Paint linePaint; // specifies line drawing characteristics
     private int audioWaveDirection;   //Direction of the audio wave (left-right or right-left)
+    private int audioWaveWidthPadding;   //Padding of the audio wave inside being drawn inside view
+    private int audioWaveHeightPadding;   //Padding of the audio wave inside being drawn inside view
     private int[]COLOR_LIST = {Color.RED, Color.YELLOW, Color.CYAN, Color.GREEN, Color.MAGENTA, Color.DKGRAY, Color.BLUE, Color.BLACK };
     private Random random;
 
@@ -34,7 +35,9 @@ public class CircleAudioWave extends View {
         linePaint.setFakeBoldText(true);
         random = new Random();
 
-        audioWaveDirection = LEFT_TO_RIGHT; // set default audio wave direction
+        audioWaveDirection = LEFT_TO_RIGHT;
+        audioWaveWidthPadding = 0;
+        audioWaveHeightPadding = 0;
     }
 
     // called when the dimensions of the View change
@@ -43,6 +46,7 @@ public class CircleAudioWave extends View {
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         width = w; // new width of this View
         height = h; // new height of this View
+
 
         //We only need insert and delete operations
         //-> use a linked list to store amplitudes
@@ -68,13 +72,13 @@ public class CircleAudioWave extends View {
     // draw the visualizer with scaled lines representing the amplitudes
     @Override
     public void onDraw(Canvas canvas) {
-        int middle = height / 2; // get the middle of the View
-        int radius = width / 2;
+        int middle = (height / 2); // get the middle of the View
+        int radius = (width / 2);
         float curX;
         if (audioWaveDirection == LEFT_TO_RIGHT){
-            curX = width;
+            curX = width - audioWaveWidthPadding;
         } else {
-            curX = 0;
+            curX = audioWaveWidthPadding;
         }
 
         float power;
@@ -82,6 +86,7 @@ public class CircleAudioWave extends View {
         // for each item in the amplitudes ArrayList
         if (amplitudes.size() >= 13){
             int amplitudes_size = amplitudes.size();
+            float step = ((width - 2 * audioWaveWidthPadding) / amplitudes_size + 1); //Line width
 //            linePaint.setColor(COLOR_LIST[random.nextInt(6)]); // set color to black
             for(int i=0; i < amplitudes_size; i++){
                 if (i >= 5){    //Store the most recent 5 data points to smooth out lines
@@ -92,7 +97,7 @@ public class CircleAudioWave extends View {
                 float scaledHeight = (power / LINE_SCALE); // scale the power
                 float lengthCurXFromCenter = curX <= radius ? curX : width - curX;  // length of the current position with respect to the origin
 
-                float maxHeight = 2 * (lengthCurXFromCenter * middle) / (radius);   // Thales's theorem: max height from current position on x-axis
+                float maxHeight =(2 * lengthCurXFromCenter * middle) / (radius) - 2 * audioWaveHeightPadding;   // Thales's theorem: max height from current position on x-axis
                                                                                     // to the point above it on the circle
                 scaledHeight = scaledHeight > maxHeight? maxHeight: scaledHeight;
 
@@ -100,11 +105,11 @@ public class CircleAudioWave extends View {
                 canvas.drawLine(curX, middle + scaledHeight / 2, curX, middle
                         - scaledHeight / 2, linePaint);
 
+
                 if (audioWaveDirection == LEFT_TO_RIGHT) {
-                    curX -= width / amplitudes_size;
-                    Log.e("DIRECTION", "onDraw: YESSS" + curX);
+                    curX -= step;
                 } else {
-                    curX += width / amplitudes_size;
+                    curX += step;
                 }
             }
         }
@@ -116,6 +121,11 @@ public class CircleAudioWave extends View {
         } else {
             this.audioWaveDirection = RIGHT_TO_LEFT;
         }
+    }
+
+    public void setAudioWavePadding(int width, int height){
+        this.audioWaveWidthPadding = width;
+        this.audioWaveHeightPadding = height;
     }
 
 }
