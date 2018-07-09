@@ -36,7 +36,7 @@ Default value: 10
 ```java
 setAudioWaveChaos(float chaos)
 ```
-Degree of chaos of the audio waves. Range [0 - 1] : Chaotic - Peaceful
+Degree of chaos of the audio waves. Range [0 - 1] : Chaotic - Harmonious
 
 Default value: 0.4
 
