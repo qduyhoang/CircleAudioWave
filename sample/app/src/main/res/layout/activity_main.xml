@@ -5,7 +5,7 @@
     android:layout_alignParentBottom="true">
 
 
-    <com.orai.qduyhoang.sample.CircleAudioWave
+    <com.orai.qduyhoang.sample.CircleAudioSpectrum
         android:id="@+id/record_button"
         android:layout_width="100dp"
         android:layout_height="100dp"

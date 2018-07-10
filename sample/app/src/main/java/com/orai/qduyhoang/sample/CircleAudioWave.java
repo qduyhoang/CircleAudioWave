@@ -5,36 +5,19 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 
 import java.util.LinkedList;
 import java.util.Random;
 
-public class CircleAudioWave extends View {
-    public static final int LEFT_TO_RIGHT = 0;
-    public static final int RIGHT_TO_LEFT = 1;
-
+public class CircleAudioWave extends CircleAudioView {
     private static final int LINE_WIDTH = 2; // width of drawn lines
     private static final int LINE_SCALE = 60; // scales audio wave lengths
     private static final int MINIMUM_DISPLAY_HEIGHT = 10;
     private static final float AUDIO_WAVE_CHAOS = (float) 0.4;  //Range [0 - 1] : Chaotic - Peaceful
 
 
-    private LinkedList<Float> amplitudes; // amplitudes for line lengths
-    private int width; // width of this View
-    private int height; // height of this View
     private Paint linePaint; // specifies line drawing characteristics
-
-    private int audioWaveLengthScale;      // scales audio wave lengths
-    private int minimumDisplayHeight;  //Minimum height of audio wave (dP) to display on View
-    private int audioWaveDirection;   //Direction of the audio wave (left-right or right-left)
-    private int audioWaveWidthPadding;   //Padding of the audio wave inside being drawn inside view
-    private int audioWaveHeightPadding;   //Padding of the audio wave inside being drawn inside view
-    private float audioWaveChaos;         //Degree of chaos of the audio waves. Range [0 - 1] : Chaotic - Peaceful
-
-    private int[]COLOR_LIST = {Color.RED, Color.YELLOW, Color.CYAN, Color.GREEN, Color.MAGENTA, Color.DKGRAY, Color.BLUE, Color.BLACK };
-    private Random random;
 
     // constructor
     public CircleAudioWave(Context context, AttributeSet attrs) {
@@ -42,7 +25,6 @@ public class CircleAudioWave extends View {
         linePaint = new Paint(); // create Paint for lines
         linePaint.setColor(Color.BLACK); // set color to black
         linePaint.setStrokeWidth(LINE_WIDTH); // set stroke width
-        random = new Random();
 
         audioWaveLengthScale = LINE_SCALE;
         minimumDisplayHeight = MINIMUM_DISPLAY_HEIGHT;
@@ -52,23 +34,6 @@ public class CircleAudioWave extends View {
         audioWaveChaos = AUDIO_WAVE_CHAOS;
     }
 
-    // called when the dimensions of the View change
-    // this is called once when the activity starts
-    @Override
-    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        width = w; // new width of this View
-        height = h; // new height of this View
-
-        //We only need insert and delete operations
-        //-> use a linked list to store amplitudes
-        //Complexity: Insertion O(1)--Deletion O(1)
-        amplitudes = new LinkedList<>();
-    }
-
-    // clear all amplitudes to prepare for a new visualization
-    public void clear() {
-        amplitudes.clear();
-    }
 
     // add the given amplitude and buffered data to the amplitudes LinkedList
     public void addAmplitude(float amplitude) {
@@ -106,7 +71,7 @@ public class CircleAudioWave extends View {
                 }
                 float scaledHeight = (power / LINE_SCALE); // scale the power
 
-                //Don't display any value less than the minimum display height - to prevent noise
+                //Don't display any value less than the minimum display height - preventing noise
                 if (scaledHeight >= minimumDisplayHeight){
                     float lengthCurXFromCenter = curX <= radius ? curX : width - curX;  // length of the current position with respect to the origin
 
@@ -128,35 +93,5 @@ public class CircleAudioWave extends View {
                 }
             }
         }
-    }
-
-    public void setAudioWaveDirection(int direction){
-        if (direction == LEFT_TO_RIGHT){
-            this.audioWaveDirection = LEFT_TO_RIGHT;
-        } else {
-            this.audioWaveDirection = RIGHT_TO_LEFT;
-        }
-    }
-
-    public void setAudioWavePadding(int width, int height){
-        this.audioWaveWidthPadding = width;
-        this.audioWaveHeightPadding = height;
-    }
-
-    //Set minimum height of audio wave (dP) to display on View
-    public void setMinimumDisplayHeight(int minimum){
-        this.minimumDisplayHeight = minimum;
-    }
-
-    public void setAudioWaveChaos(float chaos){
-        this.audioWaveChaos = chaos;
-    }
-
-    public void setAudioWaveLengthScale(int scale){
-        this.audioWaveLengthScale = scale;
-    }
-
-    public Paint getPaint(){
-        return this.linePaint;
     }
 }

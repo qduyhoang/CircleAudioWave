@@ -106,7 +106,7 @@ public class CircleAudioWave extends View {
                 }
                 float scaledHeight = (power / LINE_SCALE); // scale the power
 
-                //Don't display any value less than the minimum display height - to prevent noise
+                //Don't display any value less than the minimum display height - preventing noise
                 if (scaledHeight >= minimumDisplayHeight){
                     float lengthCurXFromCenter = curX <= radius ? curX : width - curX;  // length of the current position with respect to the origin
 

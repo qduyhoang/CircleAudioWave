@@ -4,11 +4,8 @@ import java.io.IOException;
 
 import android.Manifest;
 import android.app.Activity;
-import android.content.Context;
 import android.content.pm.PackageManager;
 import android.media.MediaRecorder;
-import android.media.MediaRecorder.OnErrorListener;
-import android.media.MediaRecorder.OnInfoListener;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -26,7 +23,7 @@ public class MainActivity extends Activity {
     public String outputDirPath;
     private TextView recordStatus;
 
-    CircleAudioWave circleAudioWave;
+    CircleAudioSpectrum circleAudioWave;
 
     private MediaRecorder recorder = null;
 
@@ -92,7 +89,6 @@ public class MainActivity extends Activity {
         public void onClick(View v) {
 
             if (!isRecording) {
-                 isRecording = true;
 
                 recordStatus.setText("Stop Recording");
 
@@ -171,8 +167,8 @@ public class MainActivity extends Activity {
             {
                 // get the current amplitude
                 int x = recorder.getMaxAmplitude();
-                circleAudioWave.addAmplitude(x); // update the VisualizeView
-                circleAudioWave.invalidate(); // refresh the VisualizerView
+                circleAudioWave.addAmplitude(x); // update view
+                circleAudioWave.invalidate(); // refresh view
 
                 // update in 40 milliseconds
                 handler.postDelayed(this, REPEAT_INTERVAL);
