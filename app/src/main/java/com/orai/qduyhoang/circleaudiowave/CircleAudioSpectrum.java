@@ -1,14 +1,11 @@
-package com.orai.qduyhoang.sample;
+package com.orai.qduyhoang.circleaudiowave;
 
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
-import android.util.Log;
-import android.view.View;
 
-import java.util.LinkedList;
 import java.util.Random;
 
 public class CircleAudioSpectrum extends CircleAudioWave {
